@@ -11,8 +11,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flex: 1,
     alignItems: 'center',
-    paddingLeft: '14px',
-    paddingRight: '14px',
+    padding: '26px 14px 14px',
+    height: '100%',
   },
   modalAlert: {
     display: 'flex',
@@ -21,18 +21,26 @@ const styles = StyleSheet.create({
     backgroundColor: colors.darkBlue,
     borderRadius: '11px',
     padding: '16px',
+    maxHeight: '100%',
   },
   modalAlertIcon: {
     display: 'flex',
     justifyContent: 'center',
-    margin: '4px 0 12px',
+    marginTop: '8px',
+  },
+  modalAlertMessageContainer: {
+    overflow: 'scroll',
+    marginTop: '16px',
   },
   modalAlertMessage: {
     fontFamily: 'Open Sans',
-    fontSize: '16px',
+    fontSize: '14px',
     fontWeight: 500,
     lineHeight: '20px',
     color: colors.white80,
+    ':not(:first-child)': {
+      marginTop: '16px',
+    },
   },
   modalAlertButtonContainer: {
     display: 'flex',
@@ -140,10 +148,10 @@ export class ModalAlert extends React.Component<IModalAlertProps> {
                 {this.renderTypeIcon(this.props.type)}
               </div>
             )}
-            {this.props.message && (
-              <span className={css(styles.modalAlertMessage)}>{this.props.message}</span>
-            )}
-            {this.props.children}
+            <div className={css(styles.modalAlertMessageContainer)}>
+              {this.props.message && <ModalMessage>{this.props.message}</ModalMessage>}
+              {this.props.children}
+            </div>
             {this.props.buttons.map((button, index) => (
               <div key={index} className={css(styles.modalAlertButtonContainer)}>
                 {button}
@@ -170,4 +178,12 @@ export class ModalAlert extends React.Component<IModalAlertProps> {
     }
     return <ImageView height={44} width={44} source={source} tintColor={color} />;
   }
+}
+
+interface IModalMessageProps {
+  children?: string;
+}
+
+export function ModalMessage(props: IModalMessageProps) {
+  return <p className={css(styles.modalAlertMessage)}>{props.children}</p>;
 }
