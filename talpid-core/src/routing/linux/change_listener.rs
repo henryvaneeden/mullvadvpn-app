@@ -5,7 +5,8 @@ use futures::{future::Either, sync::mpsc, Async, Future, Stream};
 use std::{collections::BTreeMap, io, net::IpAddr};
 
 use netlink_packet::{
-    LinkMessage, LinkNla, NetlinkMessage, NetlinkPayload, RouteMessage, RouteNla, RtnlMessage,
+    LinkMessage, LinkNla, NetlinkMessage, NetlinkPayload, RouteMessage, RouteNla, RouteTable,
+    RtnlMessage,
 };
 use netlink_sys::SocketAddr;
 use rtnetlink::constants::{
@@ -80,10 +81,18 @@ impl RouteChangeListener {
             }
 
             NetlinkPayload::Rtnl(RtnlMessage::NewRoute(new_route)) => {
-                self.get_route(new_route).map(RouteChange::Add).map(Some)
+                if new_route.header.table == RouteTable::Main {
+                    self.get_route(new_route).map(RouteChange::Add).map(Some)
+                } else {
+                    Ok(None)
+                }
             }
             NetlinkPayload::Rtnl(RtnlMessage::DelRoute(old_route)) => {
-                self.get_route(old_route).map(RouteChange::Remove).map(Some)
+                if old_route.header.table == RouteTable::Main {
+                    self.get_route(old_route).map(RouteChange::Remove).map(Some)
+                } else {
+                    Ok(None)
+                }
             }
             _ => Ok(None),
         }
