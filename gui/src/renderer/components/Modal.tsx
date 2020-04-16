@@ -122,7 +122,9 @@ export class ModalAlert extends React.Component<IModalAlertProps> {
     const modalContainer = document.getElementById(MODAL_CONTAINER_ID);
     if (modalContainer) {
       this.modalContainer = modalContainer;
-      modalContainer.appendChild(this.element);
+      setTimeout(() => {
+        modalContainer.appendChild(this.element);
+      });
     } else {
       throw Error('Modal container not found when mounting modal');
     }
